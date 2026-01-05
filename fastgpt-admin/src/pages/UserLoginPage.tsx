@@ -107,11 +107,19 @@ const UserLoginPage: React.FC<UserLoginPageProps> = ({ onNavigateToAdmin }) => {
           localStorage.setItem('user-token', data.data.token);
           localStorage.setItem('user-info', JSON.stringify(data.data));
           
-          // 设置cookie（用于代理服务器验证）
-          document.cookie = `auth_token=${data.data.token}; path=/; max-age=86400; SameSite=Lax`;
+          // 设置多个cookie名称，确保兼容性
+          const cookieOptions = 'path=/; max-age=86400; SameSite=Lax';
           
-          // 同时设置带域名的cookie，用于跨域访问
-          document.cookie = `auth_token=${data.data.token}; domain=10.14.53.120; path=/; max-age=86400; SameSite=Lax`;
+          // 1. auth_token - 用于认证系统
+          document.cookie = `auth_token=${data.data.token}; ${cookieOptions}`;
+          
+          // 2. fastgpt_token - FastGPT使用的token名称
+          document.cookie = `fastgpt_token=${data.data.token}; ${cookieOptions}`;
+          
+          // 3. token - 通用token名称
+          document.cookie = `token=${data.data.token}; ${cookieOptions}`;
+          
+          console.log('✅ Token已保存到Cookie:', data.data.token.substring(0, 20) + '...');
           
           // 保存用户ID并检查是否有未读公告
           const userId = data.data.userId || data.data.id;

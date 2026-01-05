@@ -5,11 +5,12 @@
   "main": "simple-server.js",
   "scripts": {
     "start": "node simple-server.js",
-    "start:proxy": "node fixed-proxy.js",
+    "start:proxy": "node ultra-simple-proxy.js",
     "start:all": "concurrently \"npm run start\" \"npm run start:proxy\"",
     "test": "node test/test-system.js",
     "dev": "nodemon simple-server.js",
-    "dev:proxy": "nodemon fixed-proxy.js"
+    "dev:proxy": "nodemon ultra-simple-proxy.js",
+    "dev:all": "concurrently \"npm run dev\" \"npm run dev:proxy\""
   },
   "dependencies": {
     "cors": "^2.8.5",
