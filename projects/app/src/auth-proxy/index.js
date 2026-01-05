@@ -1,6 +1,9 @@
 /**
  * FastGPT认证系统集成模块
  * 用于处理分享链接的认证跳转
+ * 
+ * 注意：认证检查已由 ultra-simple-proxy (3004端口) 统一处理
+ * 这里只需要从URL提取token并保存到cookie，供后续API调用使用
  */
 
 // 认证代理服务器的地址
@@ -8,29 +11,47 @@ const AUTH_PROXY_URL = 'http://10.14.53.120:3004';
 const AUTH_ADMIN_URL = 'http://10.14.53.120:5173';
 const AUTH_API_URL = 'http://10.14.53.120:8080';
 
-// 检查用户是否已登录，如果未登录则跳转到登录页面
+// 从URL参数或Cookie中获取token并保存（不做redirect检查）
 export const checkAuthAndRedirect = (shareId) => {
   // 如果在浏览器环境下执行
   if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('fastgpt-auth-token');
-    
-    if (!token) {
-      // 构建跳转URL - 跳转到fastgpt-admin前端(5173端口)
-      const currentUrl = window.location.href;
-      const redirectUrl = `${AUTH_ADMIN_URL}?redirect=${encodeURIComponent(currentUrl)}`;
+    try {
+      // 1. 优先从URL参数中获取token（登录后跳转回来时携带）
+      const urlParams = new URLSearchParams(window.location.search);
+      let token = urlParams.get('token');
       
-      // 跳转到登录页面
-      console.log('未检测到登录凭证，跳转到登录页面');
-      window.location.href = redirectUrl;
-      return false;
+      // 2. 如果URL中没有，尝试从Cookie中读取
+      if (!token) {
+        const cookies = document.cookie.split(';');
+        for (const cookie of cookies) {
+          const [name, value] = cookie.trim().split('=');
+          if (name === 'token' || name === 'auth_token' || name === 'fastgpt_token' || name === 'user-token') {
+            token = value;
+            break;
+          }
+        }
+      }
+      
+      // 3. 如果找到token，保存到多个地方确保可用
+      if (token && token.length > 6) {
+        console.log('✅ 检测到认证token，已保存');
+        // 保存到Cookie（供ultra-simple-proxy使用）
+        document.cookie = `token=${token}; path=/; max-age=86400`;
+        document.cookie = `fastgpt_token=${token}; path=/; max-age=86400`;
+        // 保存到localStorage（供前端使用）
+        localStorage.setItem('fastgpt-auth-token', token);
+        localStorage.setItem('user-token', token);
+        return true;
+      }
+      
+      // 4. 没有token - 但不在这里redirect（由ultra-simple-proxy统一处理）
+      console.log('ℹ️  未检测到token，认证检查将由代理服务器处理');
+      return true; // 返回true避免阻塞页面加载
+      
+    } catch (error) {
+      console.error('❌ Token处理失败:', error);
+      return true; // 出错也返回true，避免阻塞
     }
-    
-    // 将token存储到localStorage中，以便代理服务器可以使用
-    localStorage.setItem('fastgpt-auth-token', token);
-    
-    // 如果有token，则通过认证代理访问分享内容
-    const proxyUrl = `${AUTH_PROXY_URL}/chat/share?shareId=${shareId}&token=${token}`;
-    return true;
   }
   
   return true;
