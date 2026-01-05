@@ -5,7 +5,8 @@
 
 // 认证代理服务器的地址
 const AUTH_PROXY_URL = 'http://10.14.53.120:3004';
-const AUTH_SERVICE_URL = 'http://10.14.53.120:3003';
+const AUTH_ADMIN_URL = 'http://10.14.53.120:5173';
+const AUTH_API_URL = 'http://10.14.53.120:8080';
 
 // 检查用户是否已登录，如果未登录则跳转到登录页面
 export const checkAuthAndRedirect = (shareId) => {
@@ -14,9 +15,9 @@ export const checkAuthAndRedirect = (shareId) => {
     const token = localStorage.getItem('fastgpt-auth-token');
     
     if (!token) {
-      // 构建跳转URL
+      // 构建跳转URL - 跳转到fastgpt-admin前端(5173端口)
       const currentUrl = window.location.href;
-      const redirectUrl = `${AUTH_SERVICE_URL}/login.html?redirect=${encodeURIComponent(currentUrl)}`;
+      const redirectUrl = `${AUTH_ADMIN_URL}?redirect=${encodeURIComponent(currentUrl)}`;
       
       // 跳转到登录页面
       console.log('未检测到登录凭证，跳转到登录页面');
@@ -42,7 +43,7 @@ export const logChatToAuthSystem = async (question, answer) => {
     if (!token) return;
     
     try {
-      const response = await fetch(`${AUTH_SERVICE_URL}/api/chat/log`, {
+      const response = await fetch(`${AUTH_API_URL}/api/chat/log`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

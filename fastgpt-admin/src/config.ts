@@ -19,10 +19,10 @@ const config: Config = {
     PROXY_URL: window.location.hostname === 'localhost' ? 'http://localhost:3004' : 'http://10.14.53.120:3004'
   },
   production: {
-    AUTH_API_URL: import.meta.env.VITE_AUTH_API_URL || 'https://your-domain.com:3003',
-    FASTGPT_URL: import.meta.env.VITE_FASTGPT_URL || 'https://your-domain.com',
-    ADMIN_URL: import.meta.env.VITE_ADMIN_URL || 'https://admin.your-domain.com',
-    PROXY_URL: import.meta.env.VITE_PROXY_URL || 'https://proxy.your-domain.com'
+    AUTH_API_URL: import.meta.env.VITE_AUTH_API_URL || 'https://your-domain.com:8080/api',
+    FASTGPT_URL: import.meta.env.VITE_FASTGPT_URL || 'https://your-domain.com:3000',
+    ADMIN_URL: import.meta.env.VITE_ADMIN_URL || 'https://your-domain.com:5173',
+    PROXY_URL: import.meta.env.VITE_PROXY_URL || 'https://your-domain.com:3004'
   }
 }[isDev ? 'development' : 'production'];
 
