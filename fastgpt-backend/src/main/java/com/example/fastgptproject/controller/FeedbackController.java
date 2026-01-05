@@ -64,16 +64,32 @@ public class FeedbackController {
     public ResponseEntity<Map<String, Object>> createFeedback(@RequestBody Feedback feedback) {
         Map<String, Object> response = new HashMap<>();
         try {
+            System.out.println("========== 反馈创建请求 ==========");
+            System.out.println("userId: " + feedback.getUserId());
+            System.out.println("context: " + feedback.getContext());
+            
             boolean success = feedbackService.createFeedback(feedback);
             if (success) {
+                // 创建成功后，查询完整的反馈信息（包括用户名）
+                Feedback createdFeedback = feedbackService.getFeedbackById(feedback.getFbId());
+                
+                System.out.println("✅ 反馈创建成功:");
+                System.out.println("  - fbId: " + createdFeedback.getFbId());
+                System.out.println("  - userId: " + createdFeedback.getUserId());
+                System.out.println("  - userName: " + createdFeedback.getUserName());
+                System.out.println("  - context: " + createdFeedback.getContext());
+                
                 response.put("code", 200);
                 response.put("message", "反馈提交成功");
-                response.put("data", feedback);
+                response.put("data", createdFeedback); // 返回包含用户名的完整信息
             } else {
+                System.out.println("❌ 反馈创建失败");
                 response.put("code", 500);
                 response.put("message", "反馈提交失败");
             }
         } catch (Exception e) {
+            System.out.println("❌ 异常: " + e.getMessage());
+            e.printStackTrace();
             response.put("code", 500);
             response.put("message", "提交反馈时发生错误: " + e.getMessage());
         }

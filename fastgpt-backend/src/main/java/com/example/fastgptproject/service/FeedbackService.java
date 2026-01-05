@@ -19,6 +19,11 @@ public interface FeedbackService {
     List<Feedback> getFeedbacksByUserId(Integer userId);
     
     /**
+     * 根据反馈ID获取反馈详情（包含用户信息）
+     */
+    Feedback getFeedbackById(Integer fbId);
+    
+    /**
      * 创建反馈
      */
     boolean createFeedback(Feedback feedback);

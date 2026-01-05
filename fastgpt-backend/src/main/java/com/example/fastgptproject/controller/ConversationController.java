@@ -46,36 +46,27 @@ public class ConversationController {
             System.out.println("========== 对话埋点请求到达 ==========");
             System.out.println("请求数据: " + request);
             
-            // 验证必填字段
-            Object userIdObj = request.get("userId");
-            if (userIdObj == null) {
-                System.out.println("❌ userId 为空");
-                return Result.error("userId 不能为空，用户必须登录");
-            }
-            
-            System.out.println("✓ userId: " + userIdObj);
-            
             Conversation conversation = new Conversation();
             
-            // 解析用户ID
+            // 解析用户ID（允许为null）
+            Object userIdObj = request.get("userId");
             Integer userId = null;
-            if (userIdObj instanceof Integer) {
-                userId = (Integer) userIdObj;
-            } else if (userIdObj instanceof String) {
-                try {
-                    userId = Integer.parseInt((String) userIdObj);
-                } catch (NumberFormatException e) {
-                    System.out.println("❌ userId 格式错误: " + userIdObj);
-                    return Result.error("userId 格式错误");
+            
+            if (userIdObj != null) {
+                if (userIdObj instanceof Integer) {
+                    userId = (Integer) userIdObj;
+                } else if (userIdObj instanceof String) {
+                    try {
+                        userId = Integer.parseInt((String) userIdObj);
+                    } catch (NumberFormatException e) {
+                        System.out.println("⚠️ userId 格式错误，将使用null: " + userIdObj);
+                    }
                 }
             }
             
-            if (userId == null) {
-                System.out.println("❌ userId 解析失败");
-                return Result.error("userId 不能为空，用户必须登录");
-            }
-            
+            // 即使userId为null也继续处理
             conversation.setUserId(userId);
+            System.out.println("✓ userId: " + (userId != null ? userId : "null (匿名用户)"));
             
             // 标题（问题摘要）
             String question = (String) request.get("question");

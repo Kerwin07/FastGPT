@@ -1,6 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Box, Flex, Drawer, DrawerOverlay, DrawerContent } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Drawer,
+  DrawerOverlay,
+  DrawerContent,
+  useDisclosure,
+  IconButton,
+  Tooltip
+} from '@chakra-ui/react';
 import { streamFetch } from '@/web/common/api/fetch';
 import SideBar from '@/components/SideBar';
 import { GPTMessages2Chats } from '@fastgpt/global/core/chat/adapt';
@@ -40,6 +49,8 @@ import { type AppSchema } from '@fastgpt/global/core/app/type';
 import ChatQuoteList from '@/pageComponents/chat/ChatQuoteList';
 import { useToast } from '@fastgpt/web/hooks/useToast';
 import { checkAuthAndRedirect, logChatToAuthSystem } from '@/auth-proxy';
+import UserFeedbackModal from '@/components/UserFeedbackModal';
+import { FiMessageSquare } from 'react-icons/fi';
 
 const CustomPluginRunBox = dynamic(() => import('@/pageComponents/chat/CustomPluginRunBox'));
 
@@ -76,6 +87,13 @@ const OutLink = (props: Props) => {
   };
   const { isPc } = useSystem();
   const { outLinkAuthData, appId, chatId } = useChatStore();
+
+  // 用户反馈功能
+  const {
+    isOpen: isFeedbackOpen,
+    onOpen: onFeedbackOpen,
+    onClose: onFeedbackClose
+  } = useDisclosure();
 
   const isOpenSlider = useContextSelector(ChatContext, (v) => v.isOpenSlider);
   const onCloseSlider = useContextSelector(ChatContext, (v) => v.onCloseSlider);
@@ -281,7 +299,7 @@ const OutLink = (props: Props) => {
                   />
                 ) : null}
                 {/* chat box */}
-                <Box flex={1} bg={'white'}>
+                <Box flex={1} bg={'white'} position={'relative'}>
                   {isPlugin ? (
                     <CustomPluginRunBox
                       appId={appId}
@@ -301,6 +319,28 @@ const OutLink = (props: Props) => {
                       chatType="share"
                     />
                   )}
+
+                  {/* 悬浮反馈按钮 */}
+                  <Tooltip label="信息反馈" placement="left">
+                    <IconButton
+                      aria-label="信息反馈"
+                      icon={<FiMessageSquare />}
+                      position="fixed"
+                      bottom={isPc ? '80px' : '120px'}
+                      right={isPc ? '30px' : '20px'}
+                      size={isPc ? 'lg' : 'md'}
+                      colorScheme="blue"
+                      borderRadius="full"
+                      boxShadow="0 4px 12px rgba(0,0,0,0.15)"
+                      onClick={onFeedbackOpen}
+                      zIndex={1000}
+                      _hover={{
+                        transform: 'scale(1.1)',
+                        boxShadow: '0 6px 16px rgba(0,0,0,0.2)'
+                      }}
+                      transition="all 0.2s"
+                    />
+                  </Tooltip>
                 </Box>
               </Flex>
             </Flex>
@@ -317,6 +357,9 @@ const OutLink = (props: Props) => {
           </PageContainer>
         )}
       </Flex>
+
+      {/* 用户反馈弹窗 */}
+      <UserFeedbackModal isOpen={isFeedbackOpen} onClose={onFeedbackClose} />
     </>
   );
 };

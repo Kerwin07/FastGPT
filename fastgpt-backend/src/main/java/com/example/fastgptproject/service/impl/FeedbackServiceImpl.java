@@ -30,6 +30,11 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
     
     @Override
+    public Feedback getFeedbackById(Integer fbId) {
+        return feedbackMapper.findFeedbackById(fbId);
+    }
+    
+    @Override
     @Transactional
     public boolean createFeedback(Feedback feedback) {
         if (feedback.getUpTime() == null) {
