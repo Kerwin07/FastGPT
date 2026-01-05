@@ -107,6 +107,10 @@ WiredTiger*
 diagnostic.data/
 mongod.lock
 storage.bson
+# MongoDB shell history and config
+.bash_history
+.dbshell
+.mongorc.js
 
 # PostgreSQL runtime files
 **/pg/
