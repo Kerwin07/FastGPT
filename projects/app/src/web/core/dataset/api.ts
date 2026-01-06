@@ -165,11 +165,11 @@ export const postDatasetCollection = (data: CreateDatasetCollectionParams) =>
   POST<string>(`/core/dataset/collection/create`, data);
 export const postCreateDatasetFileCollection = (data: FileIdCreateDatasetCollectionParams) =>
   POST<{ collectionId: string }>(`/core/dataset/collection/create/fileId`, data, {
-    timeout: 360000
+    timeout: 900000
   });
 export const postReTrainingDatasetFileCollection = (data: reTrainingDatasetFileCollectionParams) =>
   POST<{ collectionId: string }>(`/core/dataset/collection/create/reTrainingCollection`, data, {
-    timeout: 360000
+    timeout: 900000
   });
 export const postCreateDatasetLinkCollection = (data: LinkCreateDatasetCollectionParams) =>
   POST<{ collectionId: string }>(`/core/dataset/collection/create/link`, data);
@@ -180,13 +180,13 @@ export const postCreateDatasetExternalFileCollection = (
   data: ExternalFileCreateDatasetCollectionParams
 ) =>
   POST<{ collectionId: string }>(`/proApi/core/dataset/collection/create/externalFileUrl`, data, {
-    timeout: 360000
+    timeout: 900000
   });
 export const postCreateDatasetApiDatasetCollection = (
   data: ApiDatasetCreateDatasetCollectionParams
 ) =>
   POST<{ collectionId: string }>(`/core/dataset/collection/create/apiCollection`, data, {
-    timeout: 360000
+    timeout: 900000
   });
 
 export const putDatasetCollectionById = (data: UpdateDatasetCollectionParams) =>

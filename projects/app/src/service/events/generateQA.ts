@@ -61,7 +61,7 @@ export async function generateQA(): Promise<any> {
         {
           mode: TrainingModeEnum.qa,
           retryCount: { $gt: 0 },
-          lockTime: { $lte: addMinutes(new Date(), -10) }
+          lockTime: { $lte: addMinutes(new Date(), -30) }
         },
         {
           lockTime: new Date(),

@@ -82,11 +82,19 @@ export const readRawContentByFileBuffer = async ({
       filename: `file.${extension}`
     });
     const { data: response } = await axios.post<{
-      pages: number;
-      markdown: string;
+      pages?: number;
+      page?: number; // marker v0.1 compatibility
+      markdown?: string;
       error?: Object | string;
+      success?: boolean;
+      message?: string;
+      data?: {
+        pages?: number;
+        page?: number; // marker v0.2 uses "page" not "pages"
+        markdown?: string;
+      };
     }>(url, data, {
-      timeout: 600000,
+      timeout: 900000,
       headers: {
         ...data.getHeaders(),
         Authorization: token ? `Bearer ${token}` : undefined
@@ -99,13 +107,30 @@ export const readRawContentByFileBuffer = async ({
 
     addLog.info(`Custom file parsing is complete, time: ${Date.now() - start}ms`);
 
-    const rawText = response.markdown;
+    // Compatible with multiple formats:
+    // - marker v0.1: { pages, markdown }
+    // - marker v0.2: { success, data: { page, markdown } }
+    const actualData = response.data || response;
+    const rawText = actualData.markdown || '';
+    const pages = actualData.pages || actualData.page || 0;
+
+    if (!rawText) {
+      addLog.warn('Marker returned empty markdown content', {
+        responseKeys: Object.keys(response),
+        dataKeys: response.data ? Object.keys(response.data) : [],
+        success: response.success
+      });
+      return Promise.reject('PDF parsing returned empty content');
+    }
+
+    addLog.info(`Marker parsed PDF successfully: ${pages} pages, ${rawText.length} chars`);
+
     const { text, imageList } = matchMdImg(rawText);
 
     createPdfParseUsage({
       teamId,
       tmbId,
-      pages: response.pages
+      pages
     });
 
     return {

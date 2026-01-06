@@ -81,6 +81,8 @@ export default NextAPI(handler);
 
 export const config = {
   api: {
-    bodyParser: false
-  }
+    bodyParser: false,
+    responseLimit: false
+  },
+  maxDuration: 900
 };

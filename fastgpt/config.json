@@ -1,7 +1,8 @@
 {
   "feConfigs": {
     "lafEnv": "https://laf.dev",
-    "mcpServerProxyEndpoint": "http://localhost:3000"
+    "mcpServerProxyEndpoint": "http://localhost:3000",
+    "show_git": false
   },
   "systemEnv": {
     "vectorMaxProcess": 10,
@@ -11,9 +12,9 @@
     "hnswEfSearch": 64,
     "hnswMaxScanTuples": 100000,
     "customPdfParse": {
-      "url": "https://aiproxy.hzh.sealos.run/v1/parse/pdf?model=parse-pdf",
-      "key": "sk-iCVZhBBa8nRWa8FzVt0Je0vDMRHlwrKUXNJeltgadJmgw4g3",
-      "doc2xKey": "sk-ukz9yxvtq2jirp5mtne86hfcn7dokfw2",
+      "url": "http://localhost:7231/v2/parse/file",
+      "key": "",
+      "doc2xKey": "",
       "price": 0
     }
   }

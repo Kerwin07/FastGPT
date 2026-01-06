@@ -100,8 +100,10 @@ async function handler(req: NextApiRequest, res: NextApiResponse<any>): CreateCo
 
 export const config = {
   api: {
-    bodyParser: false
-  }
+    bodyParser: false,
+    responseLimit: false
+  },
+  maxDuration: 900
 };
 
 export default NextAPI(handler);
