@@ -61,6 +61,7 @@ def worker_init(counter, lock):
         counter.value += 1
     if num_gpus == 0:
         device = 'cpu'
+        device_id = 0  # CPU模式下使用device_id=0
     else:
         device_id = worker_id // processes_per_gpu
         if device_id >= num_gpus:
@@ -217,7 +218,10 @@ async def lifespan(app: FastAPI):
     worker_counter = manager.Value('i', 0)
     worker_lock = manager.Lock()
     gpu_count = torch.cuda.device_count()
-    my_pool = ProcessPoolExecutor(max_workers=gpu_count * int(os.environ.get('PROCESSES_PER_GPU', 1)), 
+    # 如果没有GPU，使用CPU，至少1个worker
+    max_workers = max(1, gpu_count * int(os.environ.get('PROCESSES_PER_GPU', 1)))
+    logger.info(f"Starting with {max_workers} workers (GPU count: {gpu_count})")
+    my_pool = ProcessPoolExecutor(max_workers=max_workers, 
                                   initializer=worker_init, initargs=(worker_counter, worker_lock))
     yield
     if my_pool:

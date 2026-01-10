@@ -21,9 +21,13 @@ import MyBox from '@fastgpt/web/components/common/MyBox';
 import { getCollectionSourceData } from '@fastgpt/global/core/dataset/collection/utils';
 import Markdown from '.';
 import { getSourceNameIcon } from '@fastgpt/global/core/dataset/utils';
-import { Types } from 'mongoose';
 import type { OutLinkChatAuthProps } from '@fastgpt/global/support/permission/chat';
 import { useCreation } from 'ahooks';
+
+// 验证MongoDB ObjectId格式的辅助函数
+const isValidObjectId = (id: string): boolean => {
+  return /^[a-f\d]{24}$/i.test(id);
+};
 
 export type AProps = {
   chatAuthData?: {
@@ -67,7 +71,7 @@ const CiteLink = React.memo(function CiteLink({
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  if (!Types.ObjectId.isValid(id)) {
+  if (!isValidObjectId(id)) {
     return <></>;
   }
 

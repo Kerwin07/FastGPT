@@ -3,10 +3,18 @@ import { Jieba } from '@node-rs/jieba';
 let jieba: Jieba | undefined;
 
 (async () => {
-  const dictData = await import('./dict.json');
-  // @ts-ignore
-  const dictBuffer = Buffer.from(dictData.dict?.replace(/\\n/g, '\n'), 'utf-8');
-  jieba = Jieba.withDict(dictBuffer);
+  try {
+    const dictData = await import('./dict.json');
+    // @ts-ignore
+    const dictBuffer = Buffer.from(dictData.dict?.replace(/\\n/g, '\n'), 'utf-8');
+    jieba = Jieba.withDict(dictBuffer);
+  } catch (error) {
+    console.error(
+      '[Jieba Init Error] Failed to initialize jieba, text segmentation will be disabled'
+    );
+    console.error(error);
+    jieba = undefined;
+  }
 })();
 
 const stopWords = new Set([
@@ -1520,13 +1528,26 @@ const stopWords = new Set([
 ]);
 
 export async function jiebaSplit({ text }: { text: string }) {
-  text = text.replace(/[#*`_~>[\](){}|]|\S*https?\S*/g, '').trim();
-  const tokens = (await jieba!.cutAsync(text, true)) as string[];
+  try {
+    // 如果jieba未初始化，返回原文本
+    if (!jieba) {
+      console.warn('[Jieba] Jieba not initialized, returning original text');
+      return text;
+    }
 
-  return (
-    tokens
-      .map((item) => item.replace(/[\u3000-\u303f\uff00-\uffef]/g, '').trim())
-      .filter((item) => item && !stopWords.has(item))
-      .join(' ') || ''
-  );
+    text = text.replace(/[#*`_~>[\](){}|]|\S*https?\S*/g, '').trim();
+    const tokens = (await jieba.cutAsync(text, true)) as string[];
+
+    return (
+      tokens
+        .map((item) => item.replace(/[\u3000-\u303f\uff00-\uffef]/g, '').trim())
+        .filter((item) => item && !stopWords.has(item))
+        .join(' ') || ''
+    );
+  } catch (error) {
+    console.error('[Jieba Split Error] Failed to split text, returning original text');
+    console.error(error);
+    // 出错时返回原文本，不中断流程
+    return text;
+  }
 }

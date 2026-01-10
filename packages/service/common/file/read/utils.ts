@@ -78,6 +78,8 @@ export const readRawContentByFileBuffer = async ({
     addLog.info('Parsing files from an external service');
 
     const data = new FormData();
+    // 设置 FormData 最大数据大小为 100MB
+    (data as any).maxDataSize = 100 * 1024 * 1024;
     data.append('file', buffer, {
       filename: `file.${extension}`
     });
@@ -94,7 +96,9 @@ export const readRawContentByFileBuffer = async ({
         markdown?: string;
       };
     }>(url, data, {
-      timeout: 900000,
+      timeout: 14400000,
+      maxBodyLength: Infinity,
+      maxContentLength: Infinity,
       headers: {
         ...data.getHeaders(),
         Authorization: token ? `Bearer ${token}` : undefined

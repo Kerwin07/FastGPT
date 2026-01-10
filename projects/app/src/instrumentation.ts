@@ -1,5 +1,34 @@
 import { exit } from 'process';
 
+// 全局错误处理 - 防止进程崩溃
+if (typeof process !== 'undefined') {
+  process.on('uncaughtException', (error: Error) => {
+    console.error('');
+    console.error('='.repeat(80));
+    console.error('[UNCAUGHT EXCEPTION] 捕获到未处理的异常，但进程将继续运行');
+    console.error('时间:', new Date().toISOString());
+    console.error('错误信息:', error.message);
+    console.error('错误堆栈:', error.stack);
+    console.error('='.repeat(80));
+    console.error('');
+    // 不调用 exit()，让进程继续运行
+  });
+
+  process.on('unhandledRejection', (reason: any, promise: Promise<any>) => {
+    console.error('');
+    console.error('='.repeat(80));
+    console.error('[UNHANDLED REJECTION] 捕获到未处理的Promise拒绝，但进程将继续运行');
+    console.error('时间:', new Date().toISOString());
+    console.error('原因:', reason);
+    if (reason instanceof Error) {
+      console.error('错误堆栈:', reason.stack);
+    }
+    console.error('='.repeat(80));
+    console.error('');
+    // 不调用 exit()，让进程继续运行
+  });
+}
+
 /*
   Init system
 */

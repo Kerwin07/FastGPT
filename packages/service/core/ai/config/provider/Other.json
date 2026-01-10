@@ -235,7 +235,7 @@
     {
       "type": "embedding",
       "model": "qwen3-embedding",
-      "name": "Qwen3-Embedding-40K (需Milvus) ⚠️4096维",
+      "name": "Qwen3-Embedding-40K (Ollama本地)",
       "isActive": false,
       "baseUrl": "http://localhost:11434/v1",
       "requestUrl": "http://localhost:11434/v1/embeddings",
