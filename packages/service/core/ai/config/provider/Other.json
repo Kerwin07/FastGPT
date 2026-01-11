@@ -24,6 +24,7 @@
       "customCQPrompt": "",
       "customExtractPrompt": "",
       "defaultSystemChatPrompt": "",
+      "reasoning": true,
       "defaultConfig": {}
     },
     {
@@ -49,6 +50,7 @@
       "customCQPrompt": "",
       "customExtractPrompt": "",
       "defaultSystemChatPrompt": "",
+      "reasoning": true,
       "defaultConfig": {}
     },
     {
@@ -149,6 +151,7 @@
       "customCQPrompt": "",
       "customExtractPrompt": "",
       "defaultSystemChatPrompt": "",
+      "reasoning": true,
       "defaultConfig": {}
     },
     {

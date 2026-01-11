@@ -283,8 +283,9 @@ export const parseLLMStreamResponse = () => {
       buffer_finishReason = finishReason || buffer_finishReason;
 
       const content = part.choices?.[0]?.delta?.content || '';
-      // @ts-ignore
-      const reasoningContent = part.choices?.[0]?.delta?.reasoning_content || '';
+      // @ts-ignore - Support both reasoning_content (OpenAI standard) and reasoning (Ollama format)
+      const reasoningContent =
+        part.choices?.[0]?.delta?.reasoning_content || part.choices?.[0]?.delta?.reasoning || '';
       const isStreamEnd = !!buffer_finishReason;
 
       // Parse think
@@ -475,11 +476,13 @@ export const parseLLMStreamResponse = () => {
   };
 
   const getResponseData = () => {
+    // If content is empty but reasoning has content (e.g., Ollama qwen3), use reasoning as content
+    const finalContent = buffer_content || buffer_reasoningContent;
     return {
       finish_reason: buffer_finishReason,
       usage: buffer_usage,
       reasoningContent: buffer_reasoningContent,
-      content: buffer_content
+      content: finalContent
     };
   };
 
